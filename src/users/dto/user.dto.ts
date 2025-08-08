@@ -1,18 +1,17 @@
-// src/users/dto/user.dto.ts
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+// src/users/dto/user.dto.ts (No isActive field)
+import { IsNotEmpty, IsString, IsEmail, IsEnum, IsOptional, MinLength } from 'class-validator';
 import { UserRole } from '../schemas/user.schema';
 
 export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
+  @MinLength(3)
   username: string;
 
   @IsNotEmpty()
   @IsString()
+  @MinLength(6)
   password: string;
-
-  @IsEnum(UserRole)
-  role: UserRole;
 
   @IsNotEmpty()
   @IsString()
@@ -25,20 +24,22 @@ export class CreateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole = UserRole.USER;
 }
 
 export class UpdateUserDto {
   @IsOptional()
   @IsString()
+  @MinLength(3)
   username?: string;
 
   @IsOptional()
   @IsString()
+  @MinLength(6)
   password?: string;
-
-  @IsOptional()
-  @IsEnum(UserRole)
-  role?: UserRole;
 
   @IsOptional()
   @IsString()
@@ -51,6 +52,10 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole;
 }
 
 export class UserResponseDto {
@@ -60,6 +65,11 @@ export class UserResponseDto {
   companyName: string;
   fullName?: string;
   email?: string;
+  createdBy?: {
+    id: string;
+    username: string;
+    fullName?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

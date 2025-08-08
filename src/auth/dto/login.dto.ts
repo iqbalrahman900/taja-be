@@ -1,4 +1,4 @@
-// src/auth/dto/login.dto.ts
+// Update src/auth/dto/login.dto.ts
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class LoginDto {
@@ -18,5 +18,7 @@ export class TokenResponseDto {
     username: string;
     role: string;
     companyName: string;
+    fullName?: string;
+    email?: string;
   };
 }

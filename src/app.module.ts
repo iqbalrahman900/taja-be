@@ -9,6 +9,7 @@ import { SongwritersModule } from './songwriters/songwriters.module';
 import { OriginalPublishingModule } from './original-publishing/original-publishing.module';
 import { TaggingSongsModule } from './tagging-songs/tagging-songs.module';
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -25,6 +26,7 @@ import { TaggingSongsModule } from './tagging-songs/tagging-songs.module';
     SongwritersModule,
     OriginalPublishingModule,
     TaggingSongsModule,
+
   ],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-// src/users/schemas/user.schema.ts
+// src/users/schemas/user.schema.ts (Enhanced)
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
@@ -7,7 +7,6 @@ export enum UserRole {
   USER = 'user',
 }
 
-// Define a more explicit interface for Mongoose documents that includes _id and timestamps
 export interface UserDocument extends Document {
   _id: Types.ObjectId;
   username: string;
@@ -16,16 +15,17 @@ export interface UserDocument extends Document {
   companyName: string;
   fullName?: string;
   email?: string;
+  isActive: boolean;
+  createdBy?: Types.ObjectId; // Reference to admin who created this user
   createdAt: Date;
   updatedAt: Date;
-  // Include Mongoose document methods
   toObject(): Record<string, any>;
   toJSON(): Record<string, any>;
 }
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   username: string;
 
   @Prop({ required: true })
@@ -40,8 +40,14 @@ export class User {
   @Prop()
   fullName?: string;
 
-  @Prop()
+  @Prop({ unique: true, sparse: true })
   email?: string;
+
+  @Prop({ default: true })
+  isActive: boolean;
+
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  createdBy?: Types.ObjectId;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -1,4 +1,4 @@
-// src/catalogs/schemas/catalog.schema.ts
+// src/catalogs/schemas/catalog.schema.ts (Enhanced)
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 
@@ -64,7 +64,7 @@ export class Catalog {
   type: CatalogType;
   
   @Prop({ enum: VersionType })
-  versionType?: VersionType; // Added version type field for remix/cover
+  versionType?: VersionType;
 
   @Prop()
   genre?: string;
@@ -92,13 +92,17 @@ export class Catalog {
   audioFilePath?: string;
 
   @Prop({ default: 0 })
-  totalRevenue: number; // Total income received
+  totalRevenue: number;
 
   @Prop()
-  parentTapNumber?: string; // For remix/cover versions, reference to original
+  parentTapNumber?: string;
 
-  @Prop()
-  createdBy?: string;
+  // ENHANCED: Audit trail fields
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  createdBy: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  updatedBy?: Types.ObjectId;
 
   @Prop({ type: Number })
   countrycover?: number;

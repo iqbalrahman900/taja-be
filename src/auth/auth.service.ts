@@ -1,4 +1,4 @@
-// src/auth/auth.service.ts
+// src/auth/auth.service.ts (Simplified - No isActive check)
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -12,47 +12,34 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.usersService.findByUsername(username);
-    
-    if (!user) {
-      return null;
-    }
-    
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    
-    if (isPasswordValid) {
-      // Use a type assertion to access document methods
-      const userObject = (user as any).toObject ? (user as any).toObject() : { ...user };
-      const { password: _, ...result } = userObject;
-      return result;
-    }
-    
-    return null;
-  }
-
   async login(loginDto: LoginDto): Promise<TokenResponseDto> {
-    const { username, password } = loginDto;
-    const user = await this.validateUser(username, password);
-    
+    const user = await this.usersService.findByUsername(loginDto.username);
+
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    
+
+    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
     const payload = {
+      sub: user._id.toString(),
       username: user.username,
-      sub: user._id,
       role: user.role,
       companyName: user.companyName,
     };
-    
+
     return {
       accessToken: this.jwtService.sign(payload),
       user: {
-        id: user._id,
+        id: user._id.toString(),
         username: user.username,
         role: user.role,
         companyName: user.companyName,
+        fullName: user.fullName,
+        email: user.email,
       },
     };
   }
